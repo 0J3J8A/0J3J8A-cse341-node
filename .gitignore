@@ -4,6 +4,9 @@
 # Environment files
 **/.env
 
+# temples.json file (week_02_team_act folder)
+**/temples.json
+
 # OS files
 .DS_Store
 Thumbs.db
