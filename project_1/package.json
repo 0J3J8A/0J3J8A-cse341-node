@@ -1,16 +1,18 @@
 {
   "name": "project_1",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Contacts API with MongoDB and Swagger documentation",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "dev": "nodemon app.js",
     "test-db": "node test-db.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "swagger": "node swagger.js"
   },
-  "keywords": [],
+  "keywords": ["api", "mongodb", "contacts", "swagger"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

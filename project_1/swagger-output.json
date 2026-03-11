@@ -1,0 +1,342 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Contacts API",
+    "description": "API for managing contacts. This documentation allows you to test all CRUD operations.",
+    "version": "1.0.0"
+  },
+  "host": "zeroj3j8a-cse341-node-project-1.onrender.com",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Contacts",
+      "description": "Endpoints for creating, reading, updating and deleting contacts"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/contacts/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "example": "any"
+                },
+                "lastName": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "favoriteColor": {
+                  "example": "any"
+                },
+                "birthday": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "example": "any"
+                },
+                "lastName": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "favoriteColor": {
+                  "example": "any"
+                },
+                "birthday": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Contact": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "Maria"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Garcia"
+        },
+        "email": {
+          "type": "string",
+          "example": "maria.garcia@email.com"
+        },
+        "favoriteColor": {
+          "type": "string",
+          "example": "green"
+        },
+        "birthday": {
+          "type": "string",
+          "example": "1988-11-23"
+        }
+      }
+    },
+    "ContactResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "example": "60d21b4667d0d8992e610c85"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "Maria"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "Garcia"
+            },
+            "email": {
+              "type": "string",
+              "example": "maria.garcia@email.com"
+            },
+            "favoriteColor": {
+              "type": "string",
+              "example": "green"
+            },
+            "birthday": {
+              "type": "string",
+              "example": "1988-11-23"
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "2024-01-01T00:00:00.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "2024-01-01T00:00:00.000Z"
+            }
+          }
+        }
+      }
+    },
+    "ContactsListResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "count": {
+          "type": "number",
+          "example": 1
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "60d21b4667d0d8992e610c85"
+              },
+              "firstName": {
+                "type": "string",
+                "example": "Maria"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "Garcia"
+              },
+              "email": {
+                "type": "string",
+                "example": "maria.garcia@email.com"
+              },
+              "favoriteColor": {
+                "type": "string",
+                "example": "green"
+              },
+              "birthday": {
+                "type": "string",
+                "example": "1988-11-23"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2024-01-01T00:00:00.000Z"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "2024-01-01T00:00:00.000Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": false
+        },
+        "error": {
+          "type": "string",
+          "example": "Error message"
+        }
+      }
+    },
+    "CreateContactResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "60d21b4667d0d8992e610c85"
+            }
+          }
+        }
+      }
+    }
+  }
+}
