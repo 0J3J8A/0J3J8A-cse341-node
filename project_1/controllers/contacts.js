@@ -1,6 +1,7 @@
 // controllers/contacts.js
 // Import the Contact model
 const Contact = require('../models/Contact');
+const mongoose = require('mongoose'); // Needed for checking CastError
 
 // @desc    Get all contacts
 // @route   GET /contacts
@@ -16,10 +17,10 @@ const getAllContacts = async (req, res) => {
       data: contacts
     });
   } catch (error) {
-    // Handle any errors
+    // Handle any unexpected server errors
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Server Error: ' + error.message
     });
   }
 };
@@ -28,13 +29,18 @@ const getAllContacts = async (req, res) => {
 // @route   GET /contacts/:id
 const getContactById = async (req, res) => {
   try {
-    // Get the ID from the URL parameters
     const contactId = req.params.id;
     
-    // Find the contact by ID
+    // Validate if the ID is a valid MongoDB ObjectId 
+    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+      return res.status(400).json({ // 400 Bad Request
+        success: false,
+        error: 'Invalid contact ID format'
+      });
+    }
+    
     const contact = await Contact.findById(contactId);
     
-    // If contact not found, return 404
     if (!contact) {
       return res.status(404).json({
         success: false,
@@ -42,16 +48,15 @@ const getContactById = async (req, res) => {
       });
     }
     
-    // Return the contact
     res.status(200).json({
       success: true,
       data: contact
     });
   } catch (error) {
-    // Handle invalid ID format or other errors
+    // Handle other potential errors (like server issues)
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Server Error: ' + error.message
     });
   }
 };
@@ -60,25 +65,9 @@ const getContactById = async (req, res) => {
 // @route   POST /contacts
 const createContact = async (req, res) => {
   try {
-    // Get the contact data from the request body
-    const { firstName, lastName, email, favoriteColor, birthday } = req.body;
     
-    // Validate that all fields are present
-    if (!firstName || !lastName || !email || !favoriteColor || !birthday) {
-      return res.status(400).json({
-        success: false,
-        error: 'All fields are required: firstName, lastName, email, favoriteColor, birthday'
-      });
-    }
-    
-    // Create the new contact
-    const contact = await Contact.create({
-      firstName,
-      lastName,
-      email,
-      favoriteColor,
-      birthday
-    });
+    // Create the new contact. Mongoose runs validators automatically.
+    const contact = await Contact.create(req.body);
     
     // Return the new contact id in the response body
     res.status(201).json({
@@ -88,17 +77,28 @@ const createContact = async (req, res) => {
       }
     });
   } catch (error) {
-    // Handle duplicate email error or other validation errors
-    if (error.code === 11000) {
-      return res.status(400).json({
+    // ERROR HANDLING
+    // Handle Mongoose validation errors (e.g., missing field, invalid email)
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(val => val.message);
+      return res.status(400).json({ // 400 Bad Request
         success: false,
-        error: 'Email already exists'
+        error: messages.join('. ') // Combine all validation messages
       });
     }
     
+    // Handle duplicate email error (unique constraint)
+    if (error.code === 11000) {
+      return res.status(400).json({ // 400 Bad Request
+        success: false,
+        error: 'Email already exists. Please use a different email.'
+      });
+    }
+    
+    // Handle other server errors
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Server Error: ' + error.message
     });
   }
 };
@@ -107,23 +107,26 @@ const createContact = async (req, res) => {
 // @route   PUT /contacts/:id
 const updateContact = async (req, res) => {
   try {
-    // Get the ID from the URL parameters
     const contactId = req.params.id;
     
-    // Get the update data from the request body
-    const { firstName, lastName, email, favoriteColor, birthday } = req.body;
+    // Validate if the ID is a valid MongoDB ObjectId 
+    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid contact ID format'
+      });
+    }
     
-    // Find and update the contact
+    // Find and update the contact. runValidators: true is crucial here!
     const contact = await Contact.findByIdAndUpdate(
       contactId,
-      { firstName, lastName, email, favoriteColor, birthday },
+      req.body, // Use the whole body
       { 
         new: true,           // Return the updated document
-        runValidators: true  // Run schema validators
+        runValidators: true  // Run schema validators on update
       }
     );
     
-    // If contact not found, return 404
     if (!contact) {
       return res.status(404).json({
         success: false,
@@ -131,24 +134,31 @@ const updateContact = async (req, res) => {
       });
     }
     
-    // Return http status code representing successful completion
     res.status(200).json({
       success: true,
       message: 'Contact updated successfully',
       data: contact
     });
   } catch (error) {
-    // Handle duplicate email error
+    // ERROR HANDLING
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(val => val.message);
+      return res.status(400).json({
+        success: false,
+        error: messages.join('. ')
+      });
+    }
+    
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        error: 'Email already exists'
+        error: 'Email already exists. Please use a different email.'
       });
     }
     
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Server Error: ' + error.message
     });
   }
 };
@@ -157,13 +167,18 @@ const updateContact = async (req, res) => {
 // @route   DELETE /contacts/:id
 const deleteContact = async (req, res) => {
   try {
-    // Get the ID from the URL parameters
     const contactId = req.params.id;
     
-    // Find and delete the contact
+    // Validate if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid contact ID format'
+      });
+    }
+    
     const contact = await Contact.findByIdAndDelete(contactId);
     
-    // If contact not found, return 404
     if (!contact) {
       return res.status(404).json({
         success: false,
@@ -171,7 +186,6 @@ const deleteContact = async (req, res) => {
       });
     }
     
-    // Return http status code representing successful completion
     res.status(200).json({
       success: true,
       message: 'Contact deleted successfully'
@@ -179,7 +193,7 @@ const deleteContact = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Server Error: ' + error.message
     });
   }
 };

@@ -20,7 +20,7 @@ const contactSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'] // Mongoose will handle this validation
   },
   favoriteColor: {
     type: String,
@@ -30,6 +30,7 @@ const contactSchema = new mongoose.Schema({
   birthday: {
     type: String,
     required: [true, 'Birthday is required']
+    // Consider using Date type for better handling: type: Date
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt fields
