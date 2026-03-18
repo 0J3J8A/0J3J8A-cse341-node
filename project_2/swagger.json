@@ -1,0 +1,893 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Video Game and Console API",
+    "description": "RESTful API for managing a collection of video games and gaming consoles. Supports full CRUD operations with data validation and error handling.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://your-app-name.onrender.com",
+      "description": "Production server on Render (replace with your actual URL)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Games",
+      "description": "Operations related to video games"
+    },
+    {
+      "name": "Consoles",
+      "description": "Operations related to gaming consoles"
+    }
+  ],
+  "paths": {
+    "/api/games": {
+      "get": {
+        "tags": ["Games"],
+        "summary": "Get all games",
+        "description": "Returns a list of all video games in the database",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Game"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Games"],
+        "summary": "Create a new game",
+        "description": "Adds a new video game to the database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Game created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Game"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/games/{id}": {
+      "get": {
+        "tags": ["Games"],
+        "summary": "Get a game by ID",
+        "description": "Returns a single video game based on its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the game to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Game"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Games"],
+        "summary": "Update a game",
+        "description": "Updates an existing video game based on its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the game to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Game updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Game"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or invalid ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Games"],
+        "summary": "Delete a game",
+        "description": "Deletes a video game based on its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the game to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Game deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/consoles": {
+      "get": {
+        "tags": ["Consoles"],
+        "summary": "Get all consoles",
+        "description": "Returns a list of all gaming consoles in the database",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Console"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Consoles"],
+        "summary": "Create a new console",
+        "description": "Adds a new gaming console to the database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsoleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Console created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Console"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or duplicate name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/consoles/{id}": {
+      "get": {
+        "tags": ["Consoles"],
+        "summary": "Get a console by ID",
+        "description": "Returns a single gaming console based on its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the console to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Console"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Console not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Consoles"],
+        "summary": "Update a console",
+        "description": "Updates an existing gaming console based on its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the console to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsoleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Console updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Console"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error, invalid ID, or duplicate name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Console not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Consoles"],
+        "summary": "Delete a console",
+        "description": "Deletes a gaming console based on its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the console to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Console deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Console deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Console not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Game": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Game title"
+          },
+          "genre": {
+            "type": "string",
+            "description": "Game genre",
+            "enum": ["Action", "Adventure", "RPG", "Shooter", "Sports", "Strategy", "Simulation", "Puzzle", "Platformer", "Fighting", "Racing", "Horror"]
+          },
+          "releaseYear": {
+            "type": "integer",
+            "description": "Year the game was released"
+          },
+          "developer": {
+            "type": "string",
+            "description": "Game developer/studio"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Game rating (0-10)"
+          },
+          "isMultiplayer": {
+            "type": "boolean",
+            "description": "Whether the game supports multiplayer"
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Platforms the game is available on"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the game was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the game was last updated"
+          }
+        }
+      },
+      "GameInput": {
+        "type": "object",
+        "required": ["title", "genre", "releaseYear", "developer", "rating", "isMultiplayer", "platforms"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Game title",
+            "example": "The Legend of Zelda: Tears of the Kingdom"
+          },
+          "genre": {
+            "type": "string",
+            "description": "Game genre",
+            "enum": ["Action", "Adventure", "RPG", "Shooter", "Sports", "Strategy", "Simulation", "Puzzle", "Platformer", "Fighting", "Racing", "Horror"],
+            "example": "Adventure"
+          },
+          "releaseYear": {
+            "type": "integer",
+            "description": "Year the game was released",
+            "example": 2023
+          },
+          "developer": {
+            "type": "string",
+            "description": "Game developer/studio",
+            "example": "Nintendo"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Game rating (0-10)",
+            "example": 9.5
+          },
+          "isMultiplayer": {
+            "type": "boolean",
+            "description": "Whether the game supports multiplayer",
+            "example": false
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Platforms the game is available on",
+            "example": ["Nintendo Switch"]
+          }
+        }
+      },
+      "Console": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated MongoDB ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Console name"
+          },
+          "manufacturer": {
+            "type": "string",
+            "description": "Console manufacturer"
+          },
+          "releaseYear": {
+            "type": "integer",
+            "description": "Year the console was released"
+          },
+          "generation": {
+            "type": "integer",
+            "description": "Console generation (1-10)"
+          },
+          "isPortable": {
+            "type": "boolean",
+            "description": "Whether the console is portable/handheld"
+          },
+          "unitsSold": {
+            "type": "number",
+            "description": "Units sold in millions"
+          },
+          "discontinued": {
+            "type": "boolean",
+            "description": "Whether the console is discontinued"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the console was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the console was last updated"
+          }
+        }
+      },
+      "ConsoleInput": {
+        "type": "object",
+        "required": ["name", "manufacturer", "releaseYear", "generation", "isPortable"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Console name (must be unique)",
+            "example": "Nintendo Switch"
+          },
+          "manufacturer": {
+            "type": "string",
+            "description": "Console manufacturer",
+            "example": "Nintendo"
+          },
+          "releaseYear": {
+            "type": "integer",
+            "description": "Year the console was released",
+            "example": 2017
+          },
+          "generation": {
+            "type": "integer",
+            "description": "Console generation (1-10)",
+            "example": 8
+          },
+          "isPortable": {
+            "type": "boolean",
+            "description": "Whether the console is portable/handheld",
+            "example": true
+          },
+          "unitsSold": {
+            "type": "number",
+            "description": "Units sold in millions (optional)",
+            "example": 125
+          },
+          "discontinued": {
+            "type": "boolean",
+            "description": "Whether the console is discontinued (optional)",
+            "example": false
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Error message description"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Validation error"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Game title is required", "Rating cannot exceed 10"]
+          }
+        }
+      }
+    }
+  }
+}
