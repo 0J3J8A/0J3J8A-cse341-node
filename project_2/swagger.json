@@ -11,13 +11,14 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
-      "description": "Local development server"
+      "url": "https://zeroj3j8a-cse341-node.onrender.com",
+      "description": "Production server on Render"
     },
     {
-      "url": "https://your-app-name.onrender.com",
-      "description": "Production server on Render (replace with your actual URL)"
+      "url": "http://localhost:3000",
+      "description": "Local development server"
     }
+ 
   ],
   "tags": [
     {
