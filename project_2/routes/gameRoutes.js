@@ -10,18 +10,19 @@ const {
     updateGame,
     deleteGame
 } = require('../controllers/gameController');
+const { isAuthenticated, optionalAuth } = require('../middleware/authMiddleware');
 
 // Route: /api/games
 // GET all games, POST a new game
 router.route('/')
-    .get(getAllGames)    // GET /api/games - Get all games
-    .post(createGame);    // POST /api/games - Create a new game
+    .get(optionalAuth, getAllGames)    // GET /api/games - Get all games
+    .post(isAuthenticated, createGame);    // POST /api/games - Create a new game
 
 // Route: /api/games/:id
 // GET a specific game by ID, PUT (update) a game, DELETE a game
 router.route('/:id')
-    .get(getGameById)     // GET /api/games/:id - Get a single  game information
-    .put(updateGame)      // PUT /api/games/:id - Update a  game information
-    .delete(deleteGame);  // DELETE /api/games/:id - Delete a  game information
+    .get(optionalAuth, getGameById)     // GET /api/games/:id - Get a single  game information
+    .put(isAuthenticated, updateGame)      // PUT /api/games/:id - Update a  game information
+    .delete(isAuthenticated, deleteGame);  // DELETE /api/games/:id - Delete a  game information
 
 module.exports = router;
