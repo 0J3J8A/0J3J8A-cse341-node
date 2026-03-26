@@ -20,20 +20,25 @@ const PORT = process.env.PORT || 3000;
 // ===== CORS CONFIGURATION =====
 app.use(cors({
     origin: ['http://localhost:3000', 'https://zeroj3j8a-cse341-node.onrender.com'],
-    credentials: true  // IMPORTANT: Allows cookies to be sent
+    credentials: true
 }));
 
+// ===== TRUST PROXY (CRITICAL for Render) =====
+// Render runs behind a proxy, so we need to trust it for secure cookies
+app.set('trust proxy', 1);
+
 // ===== SESSION CONFIGURATION =====
-// Using MemoryStore (works on Render with single instance)
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
+    name: 'sessionId', // Custom cookie name to avoid conflicts
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
-        httpOnly: true,  // Prevents client-side access to the cookie
+        secure: true, // FORCE HTTPS for Render (always true in production)
+        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24, // 24 hours
-        sameSite: 'lax'  // Required for OAuth redirects
+        sameSite: 'none', // Required for cross-origin requests
+        domain: '.onrender.com' // Allow cookie on all subdomains
     }
 }));
 
