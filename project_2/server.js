@@ -7,7 +7,6 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const cors = require('cors');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const passport = require('./config/passport');
 
 // Import route handlers
@@ -21,24 +20,20 @@ const PORT = process.env.PORT || 3000;
 // ===== CORS CONFIGURATION =====
 app.use(cors({
     origin: ['http://localhost:3000', 'https://zeroj3j8a-cse341-node.onrender.com'],
-    credentials: true
+    credentials: true  // IMPORTANT: Allows cookies to be sent
 }));
 
-// ===== SESSION CONFIGURATION with MongoDB Store =====
+// ===== SESSION CONFIGURATION =====
+// Using MemoryStore (works on Render with single instance)
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
-        collectionName: 'sessions',
-        ttl: 24 * 60 * 60 // 24 hours in seconds
-    }),
     cookie: {
         secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours in milliseconds
-        sameSite: 'lax'
+        httpOnly: true,  // Prevents client-side access to the cookie
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        sameSite: 'lax'  // Required for OAuth redirects
     }
 }));
 
@@ -54,8 +49,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB successfully'))
-    .catch((error) => console.error('MongoDB connection error:', error));
+    .then(() => console.log(' Connected to MongoDB successfully'))
+    .catch((error) => console.error(' MongoDB connection error:', error));
 
 // Register API routes
 app.use('/auth', authRoutes);
@@ -77,6 +72,6 @@ app.use((req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Swagger Documentation available at http://localhost:${PORT}/api-docs`);
+    console.log(` Server is running on http://localhost:${PORT}`);
+    console.log(` Swagger Documentation available at http://localhost:${PORT}/api-docs`);
 });
