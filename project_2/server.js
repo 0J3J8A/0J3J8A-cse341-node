@@ -7,6 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const cors = require('cors');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('./config/passport');
 
 // Import route handlers
@@ -23,22 +24,24 @@ app.use(cors({
     credentials: true
 }));
 
-// ===== TRUST PROXY (CRITICAL for Render) =====
-// Render runs behind a proxy, so we need to trust it for secure cookies
+// ===== TRUST PROXY =====
 app.set('trust proxy', 1);
 
-// ===== SESSION CONFIGURATION =====
+// ===== SESSION CONFIGURATION with MongoDB Store =====
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
-    name: 'sessionId', // Custom cookie name to avoid conflicts
+    store: MongoStore.create({  
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions',
+        ttl: 24 * 60 * 60
+    }),
     cookie: {
-        secure: true, // FORCE HTTPS for Render (always true in production)
+        secure: true,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours
-        sameSite: 'none', // Required for cross-origin requests
-        domain: '.onrender.com' // Allow cookie on all subdomains
+        maxAge: 1000 * 60 * 60 * 24,
+        sameSite: 'none'
     }
 }));
 
