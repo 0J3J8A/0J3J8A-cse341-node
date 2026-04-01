@@ -1,14 +1,13 @@
 // models/User.js
-// User model for authentication and user management
+// User schema for authentication
 
 const mongoose = require('mongoose');
 
-// Define the schema for a user document
 const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
         unique: true,
-        sparse: true // Allows null values for non-Google users
+        sparse: true
     },
     email: {
         type: String,
@@ -25,8 +24,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         minlength: [6, 'Password must be at least 6 characters'],
-        // Password is optional for Google OAuth users
-        select: false // Don't return password by default in queries
+        select: false
     },
     createdAt: {
         type: Date,
@@ -39,7 +37,6 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Create and export the User model
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

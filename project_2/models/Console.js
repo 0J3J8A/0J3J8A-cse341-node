@@ -1,14 +1,13 @@
 // models/Console.js
-// Console model schema definition for MongoDB using Mongoose
+// Schema for gaming consoles
 
 const mongoose = require('mongoose');
 
-// Define the schema for a gaming console document
 const consoleSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Console name is required'],
-        unique: true, // Console names must be unique in the database (for not duplicate)
+        unique: true,
         trim: true,
         maxlength: [100, 'Console name cannot exceed 100 characters']
     },
@@ -34,7 +33,7 @@ const consoleSchema = new mongoose.Schema({
         required: [true, 'Please specify if the console is portable'],
         default: false
     },
-    unitsSold: { // Numeric value in millions
+    unitsSold: {
         type: Number,
         min: [0, 'Units sold cannot be negative'],
         default: 0
@@ -44,10 +43,9 @@ const consoleSchema = new mongoose.Schema({
         default: false
     }
 }, {
-    timestamps: true // Automatically add createdAt and updatedAt fields
+    timestamps: true
 });
 
-// Create and export the Console model
 const Console = mongoose.model('Console', consoleSchema);
 
 module.exports = Console;

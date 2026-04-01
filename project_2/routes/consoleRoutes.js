@@ -1,5 +1,5 @@
 // routes/consoleRoutes.js
-// Route definitions for console-related API endpoints
+// Console API endpoints
 
 const express = require('express');
 const router = express.Router();
@@ -12,17 +12,15 @@ const {
 } = require('../controllers/consoleController');
 const { isAuthenticated, optionalAuth } = require('../middleware/authMiddleware');
 
-// Route: /api/consoles
-// GET all consoles, POST a new console
+// /api/consoles
 router.route('/')
-    .get(optionalAuth, getAllConsoles)    // GET /api/consoles - Get all consoles
-    .post(isAuthenticated, createConsole);    // POST /api/consoles - Create a new console
+    .get(optionalAuth, getAllConsoles)
+    .post(isAuthenticated, createConsole);
 
-// Route: /api/consoles/:id
-// GET a specific console by ID, PUT (update) a console, DELETE a console
+// /api/consoles/:id
 router.route('/:id')
-    .get(optionalAuth, getConsoleById)     // GET /api/consoles/:id - Get a single  console information
-    .put(isAuthenticated, updateConsole)      // PUT /api/consoles/:id - Update a  console information
-    .delete(isAuthenticated, deleteConsole);  // DELETE /api/consoles/:id - Delete a  console information
+    .get(optionalAuth, getConsoleById)
+    .put(isAuthenticated, updateConsole)
+    .delete(isAuthenticated, deleteConsole);
 
 module.exports = router;

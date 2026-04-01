@@ -1,5 +1,5 @@
 // routes/gameRoutes.js
-// Route definitions for game-related API endpoints
+// Game API endpoints
 
 const express = require('express');
 const router = express.Router();
@@ -12,17 +12,15 @@ const {
 } = require('../controllers/gameController');
 const { isAuthenticated, optionalAuth } = require('../middleware/authMiddleware');
 
-// Route: /api/games
-// GET all games, POST a new game
+// /api/games
 router.route('/')
-    .get(optionalAuth, getAllGames)    // GET /api/games - Get all games
-    .post(isAuthenticated, createGame);    // POST /api/games - Create a new game
+    .get(optionalAuth, getAllGames)
+    .post(isAuthenticated, createGame);
 
-// Route: /api/games/:id
-// GET a specific game by ID, PUT (update) a game, DELETE a game
+// /api/games/:id
 router.route('/:id')
-    .get(optionalAuth, getGameById)     // GET /api/games/:id - Get a single  game information
-    .put(isAuthenticated, updateGame)      // PUT /api/games/:id - Update a  game information
-    .delete(isAuthenticated, deleteGame);  // DELETE /api/games/:id - Delete a  game information
+    .get(optionalAuth, getGameById)
+    .put(isAuthenticated, updateGame)
+    .delete(isAuthenticated, deleteGame);
 
 module.exports = router;

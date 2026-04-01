@@ -1,18 +1,13 @@
 // controllers/consoleController.js
-// Controller functions for Console CRUD operations
-// Contains all business logic for handling console-related requests
+// Handles all console related operations
 
 const Console = require('../models/Console');
 
-// @desc    Get all consoles from the database
-// @route   GET /api/consoles
-// @access  Public
+// Get all consoles from database
 const getAllConsoles = async (req, res) => {
     try {
-        // Find all consoles in the collection
         const consoles = await Console.find();
         
-        // Return success response with consoles array
         res.status(200).json({
             success: true,
             count: consoles.length,
@@ -20,7 +15,6 @@ const getAllConsoles = async (req, res) => {
         });
     } catch (error) {
         console.error('Error in getAllConsoles:', error);
-        // Return 500 Internal Server Error
         res.status(500).json({
             success: false,
             message: 'Server error while fetching consoles'
@@ -28,16 +22,11 @@ const getAllConsoles = async (req, res) => {
     }
 };
 
-// @desc    Get a single console by its ID
-// @route   GET /api/consoles/:id
-// @access  Public
+// Get a single console by id
 const getConsoleById = async (req, res) => {
     try {
-        // Find console by ID from URL parameter
-        // Using consoleItem instead of console to avoid conflict with global console object
         const consoleItem = await Console.findById(req.params.id);
 
-        // If console not found, return 404
         if (!consoleItem) {
             return res.status(404).json({
                 success: false,
@@ -45,7 +34,6 @@ const getConsoleById = async (req, res) => {
             });
         }
 
-        // Return the found console
         res.status(200).json({
             success: true,
             data: consoleItem
@@ -53,7 +41,6 @@ const getConsoleById = async (req, res) => {
     } catch (error) {
         console.error('Error in getConsoleById:', error);
         
-        // Handle invalid MongoDB ObjectId format
         if (error.name === 'CastError') {
             return res.status(400).json({
                 success: false,
@@ -68,15 +55,11 @@ const getConsoleById = async (req, res) => {
     }
 };
 
-// @desc    Create a new console
-// @route   POST /api/consoles
-// @access  Public
+// Create a new console
 const createConsole = async (req, res) => {
     try {
-        // Create new console with data from request body
         const consoleItem = await Console.create(req.body);
 
-        // Return 201 Created status with the new console
         res.status(201).json({
             success: true,
             data: consoleItem
@@ -84,9 +67,7 @@ const createConsole = async (req, res) => {
     } catch (error) {
         console.error('Error in createConsole:', error);
         
-        // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
-            // Extract all validation error messages
             const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({
                 success: false,
@@ -95,11 +76,10 @@ const createConsole = async (req, res) => {
             });
         }
         
-        // Handle duplicate key error (unique constraint violation)
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
-                message: 'Console name already exists. Name must be unique.'
+                message: 'Console name already exists'
             });
         }
         
@@ -110,22 +90,18 @@ const createConsole = async (req, res) => {
     }
 };
 
-// @desc    Update an existing console
-// @route   PUT /api/consoles/:id
-// @access  Public
+// Update an existing console
 const updateConsole = async (req, res) => {
     try {
-        // Find console by ID and update with request body data
         const consoleItem = await Console.findByIdAndUpdate(
-            req.params.id,      // ID of console to update
-            req.body,           // New data
+            req.params.id,
+            req.body,
             {
-                new: true,      // Return the updated document
-                runValidators: true // Run schema validators on update
+                new: true,
+                runValidators: true
             }
         );
 
-        // If console not found, return 404
         if (!consoleItem) {
             return res.status(404).json({
                 success: false,
@@ -133,7 +109,6 @@ const updateConsole = async (req, res) => {
             });
         }
 
-        // Return the updated console
         res.status(200).json({
             success: true,
             data: consoleItem
@@ -141,7 +116,6 @@ const updateConsole = async (req, res) => {
     } catch (error) {
         console.error('Error in updateConsole:', error);
         
-        // Handle validation errors
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({
@@ -151,7 +125,6 @@ const updateConsole = async (req, res) => {
             });
         }
         
-        // Handle invalid ID format
         if (error.name === 'CastError') {
             return res.status(400).json({
                 success: false,
@@ -159,11 +132,10 @@ const updateConsole = async (req, res) => {
             });
         }
         
-        // Handle duplicate key error
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
-                message: 'Console name already exists. Name must be unique.'
+                message: 'Console name already exists'
             });
         }
         
@@ -174,15 +146,11 @@ const updateConsole = async (req, res) => {
     }
 };
 
-// @desc    Delete a console
-// @route   DELETE /api/consoles/:id
-// @access  Public
+// Delete a console
 const deleteConsole = async (req, res) => {
     try {
-        // Find console by ID and delete it
         const consoleItem = await Console.findByIdAndDelete(req.params.id);
 
-        // If console not found, return 404
         if (!consoleItem) {
             return res.status(404).json({
                 success: false,
@@ -190,7 +158,6 @@ const deleteConsole = async (req, res) => {
             });
         }
 
-        // Return success message
         res.status(200).json({
             success: true,
             message: 'Console deleted successfully',
@@ -199,7 +166,6 @@ const deleteConsole = async (req, res) => {
     } catch (error) {
         console.error('Error in deleteConsole:', error);
         
-        // Handle invalid ID format
         if (error.name === 'CastError') {
             return res.status(400).json({
                 success: false,
@@ -214,7 +180,6 @@ const deleteConsole = async (req, res) => {
     }
 };
 
-// Export all controller functions
 module.exports = {
     getAllConsoles,
     getConsoleById,

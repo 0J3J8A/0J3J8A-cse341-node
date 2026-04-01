@@ -1,4 +1,6 @@
 // server.js
+// Main application entry point
+
 require('dotenv').config();
 
 const express = require('express');
@@ -10,7 +12,6 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('./config/passport');
 
-// Import route handlers
 const gameRoutes = require('./routes/gameRoutes');
 const consoleRoutes = require('./routes/consoleRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -18,18 +19,32 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===== CORS CONFIGURATION =====
+// Check if running in production
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+
+// CORS setup
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://zeroj3j8a-cse341-node.onrender.com'
+];
+
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://zeroj3j8a-cse341-node.onrender.com'],
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(null, false);
+        }
+    },
     credentials: true
 }));
 
-// ===== TRUST PROXY =====
-app.set('trust proxy', 1);
+// Trust proxy for Render (required for secure cookies)
+app.set('trust proxy', isProduction ? 1 : 0);
 
-// ===== SESSION CONFIGURATION with MongoDB Store =====
+// Session configuration - works for both localhost and Render
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    secret: process.env.SESSION_SECRET || 'change-this-in-production',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({  
@@ -38,48 +53,47 @@ app.use(session({
         ttl: 24 * 60 * 60
     }),
     cookie: {
-        secure: true,
+        secure: isProduction,  // true in production (HTTPS), false in local (HTTP)
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24,
-        sameSite: 'none'
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        sameSite: isProduction ? 'none' : 'lax'
     }
 }));
 
-// ===== PASSPORT INITIALIZATION =====
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware to parse JSON request bodies
 app.use(express.json());
 
-// Swagger Documentation Route
+// Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Connect to MongoDB
+// Database connection
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log(' Connected to MongoDB successfully'))
-    .catch((error) => console.error(' MongoDB connection error:', error));
+    .then(() => console.log('MongoDB connected'))
+    .catch((error) => console.error('MongoDB connection error:', error));
 
-// Register API routes
+// Routes
 app.use('/auth', authRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/consoles', consoleRoutes);
 
-// Root route for testing
+// Home route
 app.get('/', (req, res) => {
-    res.send('Video Games and Consoles API is running!');
+    res.send('Video Games and Consoles API is running');
 });
 
-// 404 handler for undefined routes
+// 404 handler
 app.use((req, res) => {
     res.status(404).json({
         success: false,
-        message: 'Route not found. Please check the URL and try again.'
+        message: 'Route not found'
     });
 });
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
-    console.log(` Server is running on http://localhost:${PORT}`);
-    console.log(` Swagger Documentation available at http://localhost:${PORT}/api-docs`);
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${isProduction ? 'production' : 'development'}`);
+    console.log(`Swagger docs at http://localhost:${PORT}/api-docs`);
 });

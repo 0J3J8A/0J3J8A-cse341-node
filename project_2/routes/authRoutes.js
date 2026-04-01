@@ -1,49 +1,30 @@
 // routes/authRoutes.js
-// Authentication routes for Google OAuth
+// Authentication routes
 
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
-console.log(' Auth routes file loaded');
-
-// @desc    Initiate Google OAuth authentication
-// @route   GET /auth/google
+// Start Google login
 router.get('/google', (req, res, next) => {
-    console.log(' /auth/google route called');
-    console.log('  Session ID:', req.sessionID);
-    console.log('  Is authenticated:', req.isAuthenticated());
-    console.log('  GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
-    console.log('  GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
-    
     passport.authenticate('google', {
         scope: ['profile', 'email']
     })(req, res, next);
 });
 
-// @desc    Google OAuth callback endpoint
+// Google callback
 router.get('/google/callback',
-    (req, res, next) => {
-        console.log(' Callback received');
-        console.log('  Query params:', req.query);
-        console.log('  Session ID:', req.sessionID);
-        next();
-    },
     passport.authenticate('google', { 
         failureRedirect: '/auth/login-failed',
         failureMessage: true
     }),
     (req, res) => {
-        console.log(' Authentication successful for:', req.user?.email);
-        console.log('  Session ID after auth:', req.sessionID);
-        console.log('  User object:', req.user?._id);
         res.redirect('/auth/success');
     }
 );
 
-// @desc    Check current user authentication status
+// Check authentication status
 router.get('/status', (req, res) => {
-    console.log(' /auth/status called, isAuthenticated:', req.isAuthenticated());
     if (req.isAuthenticated()) {
         res.json({
             isAuthenticated: true,
@@ -58,9 +39,8 @@ router.get('/status', (req, res) => {
     }
 });
 
-// @desc    Logout user and destroy session
+// Logout
 router.get('/logout', (req, res, next) => {
-    console.log('🚪 /auth/logout called');
     req.logout((err) => {
         if (err) {
             console.error('Logout error:', err);
@@ -71,7 +51,6 @@ router.get('/logout', (req, res, next) => {
                 console.error('Session destroy error:', err);
                 return next(err);
             }
-            console.log(' Logout successful');
             res.json({
                 success: true,
                 message: 'Logged out successfully'
@@ -80,20 +59,18 @@ router.get('/logout', (req, res, next) => {
     });
 });
 
-// @desc    Success endpoint after successful login
+// Success page after login
 router.get('/success', (req, res) => {
-    console.log(' /auth/success called, isAuthenticated:', req.isAuthenticated());
     if (req.isAuthenticated()) {
         res.json({
             success: true,
-            message: 'Login successful!',
+            message: 'Login successful',
             user: {
                 name: req.user.name,
                 email: req.user.email
             }
         });
     } else {
-        console.log(' /auth/success called but user not authenticated');
         res.status(401).json({
             success: false,
             message: 'Not authenticated'
@@ -101,19 +78,18 @@ router.get('/success', (req, res) => {
     }
 });
 
-// @desc    Login failed endpoint
+// Login failed
 router.get('/login-failed', (req, res) => {
-    console.log(' /auth/login-failed called');
     res.status(401).json({
         success: false,
-        message: 'Google authentication failed. Please try again.'
+        message: 'Google authentication failed'
     });
 });
 
-// @desc    Test route to verify auth routes are working
+// Test route
 router.get('/test', (req, res) => {
     res.json({ 
-        message: 'Auth routes are working!',
+        message: 'Auth routes working',
         sessionID: req.sessionID,
         isAuthenticated: req.isAuthenticated()
     });

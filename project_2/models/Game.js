@@ -1,14 +1,13 @@
 // models/Game.js
-// Game model schema definition for MongoDB using Mongoose
+// Schema for video games
 
 const mongoose = require('mongoose');
 
-// Define the schema for a video game document
 const gameSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, 'Game title is required'], // Custom error message
-        trim: true, // Remove whitespace from both ends
+        required: [true, 'Game title is required'],
+        trim: true,
         maxlength: [100, 'Game title cannot exceed 100 characters']
     },
     genre: {
@@ -41,21 +40,19 @@ const gameSchema = new mongoose.Schema({
         default: false
     },
     platforms: {
-        type: [String], // Array of strings
+        type: [String],
         required: [true, 'At least one platform is required'],
         validate: {
             validator: function(v) {
-                return v && v.length > 0; // Confirm array is NOT empty
+                return v && v.length > 0;
             },
             message: 'Please specify at least one platform'
         }
     }
 }, {
-    timestamps: true // Automatically add createdAt and updatedAt fields
+    timestamps: true
 });
 
-// Create and export the Game model
-// Mongoose will automatically look for the 'games' collection (plural, lowercase)
 const Game = mongoose.model('Game', gameSchema);
 
 module.exports = Game;
